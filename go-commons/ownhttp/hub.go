@@ -24,6 +24,7 @@ type Hub struct {
 	Mode     string
 	Clients  map[string]*SocketConnection
 	Subjects map[string]map[string]*SocketConnection
+	closing  bool
 }
 
 func NewHub() *Hub {
@@ -86,9 +87,14 @@ func (h *Hub) Remove(id string) {
 }
 
 func (h *Hub) Add(w http.ResponseWriter, r *http.Request) {
+	if h.closing {
+		WriteJSONError(w, http.StatusInternalServerError, "HUB_CLOSING", "hub closing")
+		return
+	}
+
 	c, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		WriteJSONError(w, http.StatusBadRequest, "BAD_REQUEST", "bad request")
 		return
 	}
 	remoteAddr := c.UnderlyingConn().RemoteAddr()
@@ -107,6 +113,10 @@ func (h *Hub) Add(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Hub) BroadcastJSON(eventName string, data any) {
+	if h.closing {
+		return
+	}
+
 	payload := map[string]any{"event": eventName, "data": data}
 	b, err := json.Marshal(payload)
 	if err != nil {
@@ -190,4 +200,11 @@ func (h *Hub) GetClientsLength() int {
 
 func (h *Hub) IsSubjectMode() bool {
 	return strings.EqualFold(h.Mode, "subjects")
+}
+
+func (h *Hub) Close() {
+	h.closing = true
+	for _, c := range h.Clients {
+		c.Close()
+	}
 }
