@@ -16,16 +16,5 @@ func (s *Service) routes() *http.ServeMux {
 		s.Hub.Add(w, r)
 	})
 
-	mux.HandleFunc("/ws/stats", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			ownhttp.WriteJSONError(w, 405, "NOT_ALLOWED", "method")
-			return
-		}
-		stats := s.Hub.Stats()
-		ownhttp.WriteJSON(w, 200, map[string]any{
-			"stats": stats,
-		})
-	})
-
 	return mux
 }
