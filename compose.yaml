@@ -1,0 +1,56 @@
+name: moonmap
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: moonmap-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+    healthcheck:
+      test:
+        ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgres:16
+    container_name: moonmap-postgres
+    restart: unless-stopped
+    ports:
+      - "5466:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: moonmap
+      POSTGRES_PASSWORD: moonpass
+      POSTGRES_DB: moonmap
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # https://typesense.org
+  # https://typesense.org/docs/guide/install-typesense.html#kubernetes
+  typesense:
+    image: typesense/typesense:29.0
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./typesense-data:/data
+    command: "--data-dir /data --api-key=xyz --enable-cors"
+
+volumes:
+  mongo_data:
+  pg_data:

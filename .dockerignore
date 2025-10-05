@@ -1,0 +1,11 @@
+.git
+.gitignore
+Dockerfile
+compose.yaml
+**/*.log
+tmp
+dist
+bin
+vendor
+node_modules
+.env
