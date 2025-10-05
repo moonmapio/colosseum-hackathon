@@ -154,7 +154,7 @@ func (n *NatsEventStore) createConsumerInternal(streamName, consumerName string,
 
 	consumer, err := (*n.js).CreateOrUpdateConsumer(ctx, streamName, config)
 	if err != nil {
-		logrus.WithField("streamName", streamName).Error(err)
+		logrus.WithField("streamName", streamName).Panic(err)
 		return
 	}
 
