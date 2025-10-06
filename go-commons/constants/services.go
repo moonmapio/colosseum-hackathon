@@ -8,4 +8,5 @@ const (
 	RequestRecorderServiceName = "request-recorder-service"
 	ProjectServiceName         = "project-service"
 	PriceRelayService          = "price-relay"
+	SolanaListenerServiceName  = "solana-listener-service"
 )
