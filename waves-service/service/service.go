@@ -71,6 +71,7 @@ func (s *Service) Start(sys *system.System) {
 	sys.Run(func(ctx context.Context) {
 		s.Config(ctx)
 		ownhttp.NewServer(ctx, constants.WavesServiceName, sys.Bind, s.routes(), nil)
+		<-ctx.Done()
 	})
 }
 
