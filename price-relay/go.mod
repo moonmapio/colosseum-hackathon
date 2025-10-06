@@ -59,6 +59,7 @@ require (
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
+	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.7 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tklauser/go-sysconf v0.3.15 // indirect

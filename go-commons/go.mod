@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.7
 	github.com/mr-tron/base58 v1.2.0
+	github.com/segmentio/ksuid v1.0.4
 	github.com/shirou/gopsutil/v4 v4.25.7
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver/v2 v2.3.0

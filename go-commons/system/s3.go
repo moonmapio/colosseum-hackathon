@@ -23,8 +23,8 @@ type S3Config struct {
 
 func LoadS3(ctx context.Context) (*S3Config, *s3.Client, *s3.PresignClient) {
 	s3Config := &S3Config{
-		S3AccessKey: helpers.GetEnv("S3_ACCESS_KEY", ""),
-		S3SecretKey: helpers.GetEnv("S3_SECRET_KEY", ""),
+		S3AccessKey: helpers.GetEnvOrFail("S3_ACCESS_KEY"),
+		S3SecretKey: helpers.GetEnvOrFail("S3_SECRET_KEY"),
 		S3Endpoint:  helpers.GetEnv("S3_ENDPOINT", "https://fsn1.your-objectstorage.com"),
 		S3Bucket:    helpers.GetEnv("S3_BUCKET", "moonmap"),
 		S3Region:    helpers.GetEnv("S3_REGION", "eu-central"),
