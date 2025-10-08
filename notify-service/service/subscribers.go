@@ -20,7 +20,6 @@ func (s *Service) CreateSubscriberNotify() {
 		}
 
 		logrus.Infof("new message recived from on subject=%v with id=%v seq=%s", m.Subject, msgID, streamSeq)
-
 		s.Hub.BroadcastJSON(m.Subject, NotifyEvent{
 			Subject: m.Subject,
 			ID:      fmt.Sprintf("%v:%v", msgID, streamSeq),
