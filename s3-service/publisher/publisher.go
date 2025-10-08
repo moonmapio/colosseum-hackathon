@@ -155,14 +155,13 @@ func (p *Publisher) PublishNotify(doc *persistence.MediaDoc) {
 	eventData.Status = "uploaded"
 	eventData.UpdatedAt = now
 
-	stream := "notify"
 	msgId := doc.CreateMessageId()
-	err := p.service.EventStore.PublishJSON(stream, subject, msgId, eventData, hdr)
+	err := p.service.EventStore.PublishJSON(constants.StreamNotify, subject, msgId, eventData, hdr)
 
 	mainLog := logrus.WithFields(logrus.Fields{
 		"key":     doc.Key,
 		"subject": subject,
-		"stream":  stream,
+		"stream":  constants.StreamNotify,
 		"msgId":   msgId,
 	})
 

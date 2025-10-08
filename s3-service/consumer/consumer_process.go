@@ -16,6 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"moonmap.io/go-commons/constants"
 	"moonmap.io/go-commons/persistence"
 	"moonmap.io/s3-service/core"
 )
@@ -28,13 +29,12 @@ func CreateAssetsStatus(status string) map[string]any {
 }
 
 func (c *Consumer) notify(doc *persistence.MediaDoc, status string, ok bool) {
-	stream := "notify"
 	subject := doc.CreateNotifySubject()
 	msgID := doc.CreateMessageId()
 	data := core.MediaStateFromDocument(doc)
 	data.Status = status
 	data.TransitionOk = ok
-	err := c.service.EventStore.PublishJSON(stream, subject, msgID, data, nil)
+	err := c.service.EventStore.PublishJSON(constants.StreamNotify, subject, msgID, data, nil)
 	if err != nil {
 		logrus.Error("failed: publishing. Verify connection to NATS server")
 	}

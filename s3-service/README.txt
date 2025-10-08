@@ -3,15 +3,17 @@ Cliente
   | 1) POST /media/presign (namespace/scope/profile/entity → key)
   v
 Publisher (API)
-  |-- Inserta en Mongo:
+  |-- Inserta en Mongo media_assets:
   |      { key, status:"pending", urls, planned[], mediaType, ... }
   |-- Publica NATS (JetStream, stream=media):
   |      subject: media.pending.<key>
   v
 ═══════════════════════ NATS / JetStream (stream: "media") ═══════════════════════
-
-          [Queue group: media-publisher]           [Queue group: media-transform]
+          [Durable consumer: media-publisher]       [Durable consumer: media-transform]
+                |                                           |
           (varias réplicas de Publisher)           (varias réplicas de Consumer)
+          * ya que todos los consumers tienen el mismo nombre, entonces nats se encarga d
+          * el balanceo y reparte el mensaje a un solo consumer
                 |                                           |
 2) Consume media.pending.<key>                              |
    (solo 1 réplica lo recibe, gracias a queue group)        |

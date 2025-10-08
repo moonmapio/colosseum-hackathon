@@ -123,9 +123,8 @@ func (p *Publisher) presign(mux *http.ServeMux) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(res)
 
-		stream := "notify"
 		subject := doc.CreateNotifySubject()
-		err = p.service.EventStore.PublishJSON(stream, subject, msgID, res.PendingEvent.Data, nil)
+		err = p.service.EventStore.PublishJSON(constants.StreamNotify, subject, msgID, res.PendingEvent.Data, nil)
 		if err != nil {
 			logrus.Error("failed: publishing. Verify connection to NATS server")
 		}
