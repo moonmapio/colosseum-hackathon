@@ -30,4 +30,6 @@ func (s *System) LoadEnvFile() {
 		s.Bind = ":" + s.Bind
 	}
 
+	logrus.Infof("Server will be started on port %s", s.Bind)
+
 }

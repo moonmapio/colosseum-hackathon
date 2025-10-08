@@ -5,7 +5,7 @@ import "strings"
 func SanitizeStrings(targets []string) []string {
 	r := []string{}
 	for _, s := range targets {
-		s = strings.TrimSpace(strings.ToLower(s))
+		s = strings.TrimSpace(s)
 		if s == "" {
 			continue
 		}
