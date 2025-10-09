@@ -2,11 +2,12 @@ package constants
 
 const (
 	NotifyServiceName          = "notify-service"
-	S3ConsumerService          = "s3-consumer"
-	S3PublisherService         = "s3-publisher"
 	WavesServiceName           = "waves-service"
-	RequestRecorderServiceName = "request-recorder-service"
 	ProjectServiceName         = "project-service"
-	PriceRelayService          = "price-relay"
+	SpheresServiceName         = "spheres-service"
+	PriceRelayServiceName      = "price-relay"
+	S3ConsumerServiceName      = "s3-consumer"
+	S3PublisherServiceName     = "s3-publisher"
 	SolanaListenerServiceName  = "solana-listener-service"
+	RequestRecorderServiceName = "request-recorder-service"
 )

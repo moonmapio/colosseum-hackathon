@@ -43,8 +43,8 @@ func IndexProject(tsColl string, p persistence.ProjectDoc) error {
 		Name:            p.Name,
 		Symbol:          p.Symbol,
 		Chain:           p.Chain,
-		ContractAddress: *p.ContractAddress,
-		Narrative:       *p.Narrative,
+		ContractAddress: helpers.StrFromPtr(p.ContractAddress),
+		Narrative:       helpers.StrFromPtr(p.Narrative),
 		LaunchDate:      launchdate,
 		LaunchDateUnix:  launchdateUnix,
 		Twitter:         helpers.StrFromPtr(p.Twitter),
@@ -60,7 +60,7 @@ func IndexProject(tsColl string, p persistence.ProjectDoc) error {
 		PositiveVotes:   uint32(0),
 		NegativeVotes:   uint32(0),
 		Source:          "moonmap",
-		DevWallet:       *p.DevWallet,
+		DevWallet:       helpers.StrFromPtr(p.DevWallet),
 	}
 
 	b, _ := json.Marshal(payload)
