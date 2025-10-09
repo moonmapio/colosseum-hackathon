@@ -105,6 +105,10 @@ func (s *Service) HandleCreateOrUpdateProject(w http.ResponseWriter, r *http.Req
 		UpdatedAt:       now,
 	}
 
+	if in.ContractAddress == nil || strings.TrimSpace(*in.ContractAddress) == "" {
+		doc.ContractAddress = nil
+	}
+
 	if in.LaunchDate != nil && *in.LaunchDate != "" {
 		if t, err := time.Parse(time.RFC3339, *in.LaunchDate); err == nil {
 			doc.LaunchDate = &t
