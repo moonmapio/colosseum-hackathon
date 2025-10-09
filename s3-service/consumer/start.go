@@ -32,7 +32,7 @@ func (c *Consumer) Start(sys *system.System) {
 		}
 
 		go c.createTransformConsumer()
-		ownhttp.NewServer(ctx, constants.S3ConsumerService, sys.Bind, c.consumerRoutes(), nil)
+		ownhttp.NewServer(ctx, constants.S3ConsumerServiceName, sys.Bind, c.consumerRoutes(), nil)
 
 		<-ctx.Done()
 		close(c.service.MediaChannel)

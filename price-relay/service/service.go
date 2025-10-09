@@ -72,7 +72,7 @@ func (s *Service) Start(sys *system.System) {
 		go s.background(ctx)
 
 		// http server
-		ownhttp.NewServer(ctx, constants.PriceRelayService, sys.Bind, s.routes(), nil)
+		ownhttp.NewServer(ctx, constants.PriceRelayServiceName, sys.Bind, s.routes(), nil)
 		<-ctx.Done()
 	})
 }

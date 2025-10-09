@@ -13,7 +13,7 @@ func (p *Publisher) Start(sys *system.System) {
 		p.service.Config(ctx)
 		p.createPendingConsumer()
 
-		ownhttp.NewServer(ctx, constants.S3PublisherService, sys.Bind, p.publisherRoutes(), nil)
+		ownhttp.NewServer(ctx, constants.S3PublisherServiceName, sys.Bind, p.publisherRoutes(), nil)
 		<-ctx.Done()
 	})
 }
