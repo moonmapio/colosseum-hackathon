@@ -22,9 +22,9 @@ func (s *Service) OnStatus(name, status string) {
 
 	msg := fmt.Sprintf("%s socket %s", name, status)
 	if status == "DOWN" {
-		s.QueueManager.EnqueueError(s.QueueManager.ServiceName, msg)
+		s.AlertClient.EnqueueError(msg)
 	} else {
-		s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)
+		s.AlertClient.EnqueueInfo(msg)
 	}
 }
 
@@ -48,7 +48,7 @@ func (s *Service) SubscribeLogs(conn *websocket.Conn) error {
 		req := JSONRPCReq{JSONRPC: "2.0", ID: id, Method: "logsSubscribe", Params: params}
 		s.logSocket.SendJSON(req)
 		msg := fmt.Sprintf("Subscribed to logsSubscribe program=%s with id %v commitment=%v", prog, id, commitment)
-		s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)
+		s.AlertClient.EnqueueInfo(msg)
 		logrus.Infof("Subscribed logsSubscribe to program=%s id=%d commitment=%v", prog, id, commitment)
 	}
 
@@ -96,7 +96,7 @@ func (s *Service) handleLogsMessage(data []byte) {
 			if err != nil {
 				_ = s.logsBacklog.Write(ev)
 				msg := fmt.Sprintf("Publish failed, msgID %v wrote to logs backlog", ev.MsgID)
-				s.QueueManager.EnqueueWarn(s.QueueManager.ServiceName, msg)
+				s.AlertClient.EnqueueWarn(msg)
 			}
 		case "nats_failed":
 			_ = s.logsBacklog.Write(ev)
@@ -125,7 +125,7 @@ func (s *Service) SubscribeProgram(conn *websocket.Conn) error {
 		req := JSONRPCReq{JSONRPC: "2.0", ID: id, Method: "programSubscribe", Params: params}
 		s.programSocket.SendJSON(req)
 		msg := fmt.Sprintf("Subscribed to programSubscribe program=%s with id %v commitment=%v", prog, id, commitment)
-		s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)
+		s.AlertClient.EnqueueInfo(msg)
 		logrus.Infof("Subscribed programSubscribe to program=%s id=%d commitment=%v", prog, id, commitment)
 	}
 
@@ -170,7 +170,7 @@ func (s *Service) handleProgramMessage(data []byte) {
 		if err != nil {
 			_ = s.programBacklog.Write(ev)
 			msg := fmt.Sprintf("Publish failed, msgID %v wrote to backlog", ev.MsgID)
-			s.QueueManager.EnqueueWarn(s.QueueManager.ServiceName, msg)
+			s.AlertClient.EnqueueWarn(msg)
 		}
 	case "nats_failed":
 		_ = s.programBacklog.Write(ev)

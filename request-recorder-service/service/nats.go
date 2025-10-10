@@ -6,18 +6,18 @@ import (
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"moonmap.io/go-commons/constants"
 )
 
 func (s *Service) createConsumer() {
-	stream := "requests"
 	consumer := "request-recorder-consumer"
 	subjects := []string{"requests.incomming"}
 
-	s.EventStore.CreateConsumer(stream, consumer, subjects,
+	s.EventStore.CreateConsumer(constants.StreamRequests, consumer, subjects,
 		func(msg jetstream.Msg) error {
 			data := msg.Data()
 			mainLog := logrus.WithFields(logrus.Fields{
-				"stream":   stream,
+				"stream":   constants.StreamRequests,
 				"consumer": consumer,
 				"subjects": strings.Join(subjects, ","),
 			})

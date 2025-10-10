@@ -119,10 +119,7 @@ func (s *Service) ReplayFromBacklogs() {
 
 	// ✅ todo limpio
 	s.SetStatus("healthy")
-	s.QueueManager.EnqueueInfo(
-		s.QueueManager.ServiceName,
-		"Replay finished, service healthy",
-	)
+	s.AlertClient.EnqueueInfo("Replay finished, service healthy")
 }
 
 func (s *Service) noPendingBacklogs() bool {

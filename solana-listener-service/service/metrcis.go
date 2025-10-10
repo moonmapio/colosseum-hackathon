@@ -41,12 +41,12 @@ func (s *Service) StartMetricsLogger() {
 				if progQueueLen*100/progCapacity > warnThresholdPct {
 					message := fmt.Sprintf("⚠️ programQueue is above %d%%: %d/%d", warnThresholdPct, progQueueLen, progCapacity)
 					logrus.Warn(message)
-					s.QueueManager.EnqueueWarn(s.QueueManager.ServiceName, message)
+					s.AlertClient.EnqueueWarn(message)
 				}
 				if logQueueLen*100/logCapacity > warnThresholdPct {
 					message := fmt.Sprintf("⚠️ logQueue is above %d%%: %d/%d", warnThresholdPct, logQueueLen, logCapacity)
 					logrus.Warn(message)
-					s.QueueManager.EnqueueWarn(s.QueueManager.ServiceName, message)
+					s.AlertClient.EnqueueWarn(message)
 				}
 			}
 		}

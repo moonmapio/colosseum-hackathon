@@ -51,8 +51,8 @@ type Service struct {
 
 	outFile *os.File
 
-	EventStore   *system.NatsEventStore
-	QueueManager *messages.QueueManager
+	EventStore  *system.NatsEventStore
+	AlertClient *messages.AlertServiceClient
 }
 
 func New() *Service {
@@ -73,7 +73,6 @@ func New() *Service {
 	}
 
 	serviceName := constants.SolanaListenerServiceName
-	s.QueueManager = messages.NewManager(serviceName, "support@moonmap.io", "MoonMap Support", s.startedAt)
 	s.EventStore = system.NewEventStore(serviceName)
 
 	s.mu.Lock()
@@ -97,7 +96,7 @@ func (s *Service) DisconnectErrHandler(nc *nats.Conn, err error) {
 	s.SetStatus("nats_failed")
 	msg := "NATS down, switching to JSONL fallback"
 	logrus.Warn(msg)
-	s.QueueManager.EnqueueWarn(s.QueueManager.ServiceName, msg)
+	s.AlertClient.EnqueueWarn(msg)
 }
 
 // func (s *Service) ReconnectHandler(nc *nats.Conn) {
@@ -137,7 +136,7 @@ func (s *Service) ReconnectHandler(nc *nats.Conn) {
 	msg := "NATS back, replaying backlog"
 	logrus.Info(msg)
 	s.SetStatus("replay")
-	s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)
+	s.AlertClient.EnqueueInfo(msg)
 
 	if atomic.CompareAndSwapInt32(&s.replaying, 0, 1) {
 		go func() {
@@ -205,6 +204,9 @@ func (s *Service) Config(ctx context.Context, cancel context.CancelFunc) {
 	s.ctx = ctx
 	s.cancel = cancel
 
+	serviceName := constants.SolanaListenerServiceName
+	s.AlertClient = messages.NewAlertServiceClient(s.ctx, serviceName)
+
 	LogSubscribeChannelLength := helpers.GetEnvInt("LOG_SUBSCRIBE_CHANNEL_LENGTH", 10000)
 	s.logSocket = &ownhttp.ManagedWS{
 		Name:      "LogSubscribe",
@@ -223,8 +225,6 @@ func (s *Service) Config(ctx context.Context, cancel context.CancelFunc) {
 		Messages:  make(chan []byte, ProgramSubscribeChannelLength),
 	}
 
-	s.QueueManager.SetContext(s.ctx)
-
 	var size100mb int64 = 100 * 1024 * 1024
 	s.logsBacklog = persistence.NewBacklog("./data/backlog-logs", size100mb, 5)
 	s.programBacklog = persistence.NewBacklog("./data/backlog-program", size100mb, 100)
@@ -236,14 +236,13 @@ func (s *Service) Start(sys *system.System) {
 		s.Config(ctx, sys.GetCancel())
 
 		s.StartMetricsLogger()
-		s.QueueManager.StartAggregator(5 * time.Second)
 		s.logSocket.Start(s.ctx)
 		s.programSocket.Start(s.ctx)
 
 		go s.wsProcessor(s.logSocket.Messages, s.handleLogsMessage)
 		go s.wsProcessor(s.programSocket.Messages, s.handleProgramMessage)
 
-		s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, "Service running")
+		s.AlertClient.EnqueueInfo("Service running")
 		ownhttp.NewServer(ctx, constants.SolanaListenerServiceName, sys.Bind, s.routes(), nil)
 		<-ctx.Done()
 		s.Stop()
@@ -298,7 +297,6 @@ func (s *Service) Stop() {
 
 	close(s.logSocket.Messages)
 	close(s.programSocket.Messages)
-	s.QueueManager.Close()
 
 	prog := atomic.LoadUint64(&s.programEventsSeen)
 	logs := atomic.LoadUint64(&s.logEventsSeen)

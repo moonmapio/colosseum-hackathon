@@ -167,5 +167,5 @@ func (s *Service) CreateStreamSpheres() {
 
 func (s *Service) enqueueStreamCreation(streamName string) {
 	msg := fmt.Sprintf("Stream %s created or updated", streamName)
-	s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)
+	s.AlertClient.EnqueueInfo(msg)
 }

@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug alert-service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/alert-service"
+    },
+    {
       "name": "Debug Echo",
       "type": "go",
       "request": "launch",

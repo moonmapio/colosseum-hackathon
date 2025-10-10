@@ -1,6 +1,7 @@
 package constants
 
 const (
+	AlertServiceName           = "alert-service"
 	NotifyServiceName          = "notify-service"
 	WavesServiceName           = "waves-service"
 	ProjectServiceName         = "project-service"
