@@ -2,6 +2,7 @@ package constants
 
 const StreamMedia = "media"
 const StreamNotify = "notify"
+const StreamSpheres = "spheres"
 const StreamRequests = "requests"
 const StreamReflector = "reflector"
 const StreamSolanaMints = "solanamints"

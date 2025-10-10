@@ -2,23 +2,22 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/nats-io/nats.go/jetstream"
 	"github.com/sirupsen/logrus"
+	"moonmap.io/go-commons/constants"
 )
 
 func (s *Service) CreateConsumerSpheres() {
 	hostname, _ := os.Hostname()
 	hostname = strings.Split(hostname, ".")[0]
-
 	consumerName := hostname
 
-	stream := "spheres"
-	subjects := []string{"spheres.>"} // todos los eventos bajo spheres
-
-	s.EventStore.CreateConsumer(stream, consumerName, subjects,
+	subjects := []string{fmt.Sprintf("%s.>", constants.StreamSpheres)}
+	s.EventStore.CreateConsumer(constants.StreamSpheres, consumerName, subjects,
 		func(msg jetstream.Msg) error {
 			data := msg.Data()
 			logrus.Infof("consuming event subject=%s", msg.Subject())

@@ -148,6 +148,23 @@ func (s *Service) CreateStreamSolana() {
 	s.EventStore.GetConn()
 }
 
+func (s *Service) CreateStreamSpheres() {
+	config := jetstream.StreamConfig{
+		Name:        constants.StreamSpheres,
+		Retention:   jetstream.LimitsPolicy,
+		Storage:     jetstream.FileStorage,
+		Duplicates:  1 * time.Hour,
+		AllowRollup: true,
+		Replicas:    1,
+		MaxAge:      2 * time.Hour,
+		MaxBytes:    -1, //1073741824 * 2, // 1GB
+		Subjects:    []string{fmt.Sprintf("%s.>", constants.StreamSpheres)},
+	}
+
+	s.EventStore.CreateStreamWithConfig(s.Ctx, config)
+	s.enqueueStreamCreation(config.Name)
+}
+
 func (s *Service) enqueueStreamCreation(streamName string) {
 	msg := fmt.Sprintf("Stream %s created or updated", streamName)
 	s.QueueManager.EnqueueInfo(s.QueueManager.ServiceName, msg)

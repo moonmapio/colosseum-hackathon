@@ -52,6 +52,7 @@ func (s *Service) Config(ctx context.Context, cancelFunc context.CancelFunc) {
 	s.CreateStreamNotify()
 	s.CreateStreamRequest()
 	s.CreateStreamSolana()
+	s.CreateStreamSpheres()
 
 	s.CreateConsumerSpheres()
 	s.CreateSubscriberNotify()
