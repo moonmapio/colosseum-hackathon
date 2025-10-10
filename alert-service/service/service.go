@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"moonmap.io/go-commons/constants"
+	"moonmap.io/go-commons/helpers"
 	"moonmap.io/go-commons/messages"
 	"moonmap.io/go-commons/ownhttp"
 	"moonmap.io/go-commons/system"
@@ -24,7 +25,9 @@ func New() *Service {
 		s.startedAt = time.Now().UTC()
 	}
 
-	s.QueueManager = messages.NewManager(constants.AlertServiceName, "support@moonmap.io", "MoonMap Support", s.startedAt)
+	senderName := helpers.GetEnvOrFail("SENDER_NAME")
+	senderEmail := helpers.GetEnvOrFail("SENDER_EMAIL")
+	s.QueueManager = messages.NewManager(constants.AlertServiceName, senderEmail, senderName, s.startedAt)
 	return s
 }
 
@@ -34,7 +37,6 @@ func (s *Service) Config(ctx context.Context, cancelFunc context.CancelFunc) {
 
 	s.QueueManager.SetContext(s.Ctx)
 	s.QueueManager.StartIdleAggregator(10 * time.Second)
-
 }
 
 func (s *Service) Start(sys *system.System) {
