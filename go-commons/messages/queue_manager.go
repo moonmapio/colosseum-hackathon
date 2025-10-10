@@ -17,7 +17,7 @@ type QueueManager struct {
 	mailjetManager *MailjetManager
 	startedAt      time.Time
 	closed         int32 // atomic flag
-
+	pendingEvents  []EventMessage
 }
 
 type EventMessage struct {
@@ -75,6 +75,36 @@ func (m *QueueManager) StartAggregator(freq time.Duration) {
 	}()
 }
 
+func (m *QueueManager) StartIdleAggregator(idleDelay time.Duration) {
+	go func() {
+		var timer *time.Timer
+		for {
+			select {
+			case <-m.ctx.Done():
+				if timer != nil {
+					timer.Stop()
+				}
+				m.flushEvents()
+				return
+
+			case ev, ok := <-m.eventQueue:
+				if !ok {
+					return
+				}
+
+				m.pendingEvents = append(m.pendingEvents, ev)
+
+				if timer != nil {
+					timer.Stop()
+				}
+				timer = time.AfterFunc(idleDelay, func() {
+					m.flushPending()
+				})
+			}
+		}
+	}()
+}
+
 func (m *QueueManager) flushEvents() {
 	var events []EventMessage
 	drain := true
@@ -90,6 +120,29 @@ func (m *QueueManager) flushEvents() {
 	if len(events) == 0 {
 		return
 	}
+
+	data := &Data{Messages: events}
+	err := m.mailjetManager.SendMail(
+		m.recipients,
+		"Cluster Events",
+		"See attached report",
+		data,
+	)
+
+	if err != nil {
+		logrus.WithError(err).Error("failed to send aggregated events email")
+	} else {
+		logrus.Infof("sent aggregated email with %d events", len(events))
+	}
+}
+
+func (m *QueueManager) flushPending() {
+	if len(m.pendingEvents) == 0 {
+		return
+	}
+
+	events := m.pendingEvents
+	m.pendingEvents = nil
 
 	data := &Data{Messages: events}
 	err := m.mailjetManager.SendMail(
