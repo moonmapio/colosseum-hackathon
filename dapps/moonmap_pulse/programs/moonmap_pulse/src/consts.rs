@@ -17,5 +17,6 @@ pub const MAX_NAME: u8 = 64;
 #[constant]
 pub const MAX_URI: u8 = 255;
 
+// 0.5 % = 50, 0.05 % = 5, 100 % = 10 000
 #[constant]
 pub const MAX_POSSIBLE_FEES: u16 = 10_000;

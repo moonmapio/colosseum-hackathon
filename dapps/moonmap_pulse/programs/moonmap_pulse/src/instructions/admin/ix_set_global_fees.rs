@@ -1,4 +1,4 @@
-use crate::{consts::*, errors::*, math::safe_sum_with_u16cap, state::*};
+use crate::{consts::*, math::safe_sum_with_u16cap, state::*};
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
@@ -14,11 +14,10 @@ pub fn set_global_fees(
     validator_bps: u16,
     creator_bps: u16,
 ) -> Result<()> {
-    let bps_count: u16 = safe_sum_with_u16cap(
+    safe_sum_with_u16cap(
         &[moonmap_bps, validator_bps, creator_bps],
         MAX_POSSIBLE_FEES,
-    );
-    require!(bps_count <= MAX_POSSIBLE_FEES, MMError::InvalidFees);
+    )?;
 
     let g = &mut ctx.accounts.global;
     g.moonmap_fee_bps = moonmap_bps;
