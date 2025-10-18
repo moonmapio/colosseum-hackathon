@@ -63,7 +63,7 @@
       "address": "0.0.0.0",
       "restart": true,
       "port": 9230,
-      "cwd": "${workspaceFolder}/frontend"
+      "cwd": "${workspaceFolder}/frontend/moonmap-main-app"
     },
     {
       "name": "Next.js: debug client-side",
@@ -80,7 +80,7 @@
       "pathMappings": [
         {
           "url": "webpack://_N_E",
-          "path": "${workspaceFolder}/frontend"
+          "path": "${workspaceFolder}/frontend/moonmap-main-app"
         }
       ]
     },
@@ -88,7 +88,7 @@
       "name": "Next.js: debug full stack",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/frontend/node_modules/next/dist/bin/next",
+      "program": "${workspaceFolder}/frontend/moonmap-main-app/node_modules/next/dist/bin/next",
       "runtimeArgs": ["--inspect"],
       "skipFiles": ["<node_internals>/**"],
       "serverReadyAction": {
@@ -96,7 +96,7 @@
         "killOnServerStop": true,
         "pattern": "- Local:.+(https?://.+)",
         "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}/frontend"
+        "webRoot": "${workspaceFolder}/frontend/moonmap-main-app"
       }
     }
   ]
